@@ -1,2 +1,2 @@
-# SSN
-Stochastic Synapse Networks
+# Stochastic Synapse Networks
+
