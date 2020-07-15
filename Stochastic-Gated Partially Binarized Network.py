@@ -186,13 +186,11 @@ def binaryStochastic_ST(x, slope_tensor=None, pass_through=True, stochastic=True
       slope_tensor = tf.constant(1.0)
 
   if pass_through:
-      print('tst')
       p = passThroughSigmoid(x)
   else:
       p = tf.sigmoid(slope_tensor*x)
 
   if stochastic:
-      print('tess')
       return bernoulliSample(p)
   else:
       return binaryRound(p)      
@@ -355,7 +353,6 @@ def conv_layer(x_input, filter_size, strides, padding, name_f, name_conv, layer,
   # conv layer
   conv = tf.nn.conv2d(x_input, filter_l,  strides=strides, padding=padding, name=name_conv)
 
-  #out  = conv + bias
   out  = batch_norm(training, conv, channels, layer)
  
   # Need Pooling ?
