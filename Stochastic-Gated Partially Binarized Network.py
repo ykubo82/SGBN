@@ -426,10 +426,8 @@ def joint_inference(x_input, training, slope, dropout):
 
     
     # second input (images) 
-    all_input_1      = conv2d_inference(x_input, LAYER_1, filter_size[0], channels[0], 'conv1', 'conv1_layer', 1, image_depth, training, 11)
+    all_inputs_1      = conv2d_inference(x_input, LAYER_1, filter_size[0], channels[0], 'conv1', 'conv1_layer', 1, image_depth, training, 11)
    
-    all_inputs_1 = all_input_1
-
     # stochastic layer
     with tf.variable_scope('multiplication') as scope:
       output_state_1    = layer_linear(all_inputs_1, (all_inputs_1.get_shape()[1], STATE_NUM), scope='layer_pre_pre')
@@ -465,8 +463,7 @@ def joint_inference(x_input, training, slope, dropout):
 
     
     # second input (images)
-    all_input_2 = conv2d_inference(out_1, LAYER_2, filter_size[1], channels[1], 'conv2', 'conv2_layer', 2, channels[0], training, 12)
-    all_inputs_2 = all_input_2 
+    all_inputs_2 = conv2d_inference(out_1, LAYER_2, filter_size[1], channels[1], 'conv2', 'conv2_layer', 2, channels[0], training, 12)
   
     # stochastic layer
     with tf.variable_scope('multiplication') as scope:
