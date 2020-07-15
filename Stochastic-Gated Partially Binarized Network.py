@@ -37,15 +37,14 @@ batch_size      = 50
 filter_size       = [5,5]
 previous_channels = [1, 32]
 channels          = [32, 64]
-LAYER_1           = 512 #channels[0]
-LAYER_2           = 1024#channels[1]*channels[0]
+LAYER_1           = 512 
+LAYER_2           = 1024
 LAYER_LINEAR      = 100
 
 argvs = sys.argv
 dir_num        =  [float(argvs[1])][0]
 STATE_NUM      =  [float(argvs[2])][0]
 directory      = 'sw_2cnn_bn_tanh3_wow_er_'+ str(STATE_NUM) + '_' + str(float(dir_num))
-#directory      = 'sw_2cnn_bn_tanh3_wow_wodp_'+ str(STATE_NUM) + '_' + str(float(dir_num))
 
 mnist = mnist_input.read_data_sets('MNIST_data', one_hot=True)
 
@@ -53,19 +52,6 @@ mnist = mnist_input.read_data_sets('MNIST_data', one_hot=True)
 regularizer_ = None
 if WEIGHT_DECAY:
   regularizer_ = tf.contrib.layers.l2_regularizer(L2)
-
-#def earlyStopping(loss_value, best_loss, run_context)
-  #if (loss_value < best_loss):
-    #stopping_step = 0
-    #best_loss = loss_value
-  #else:
-    #stopping_step += 1
-  #ifstopping_step >= early_stopping_step:
-    #should_stop = True
-    
-    #print("Early stopping is trigger")
-    #run_context.request_stop()
-  #return best_loss, should_stop
 
 alpha = 0.3
 def lrelu(x):
@@ -204,7 +190,6 @@ def binaryStochastic_ST(x, slope_tensor=None, pass_through=True, stochastic=True
       p = passThroughSigmoid(x)
   else:
       p = tf.sigmoid(slope_tensor*x)
-      #p = hard_sigmoid(slope_tensor*x)
 
   if stochastic:
       print('tess')
@@ -378,9 +363,7 @@ def conv_layer(x_input, filter_size, strides, padding, name_f, name_conv, layer,
   
   # Need activation (elu, relu, or tanh) ?
   if activation:
-    #out = lrelu(out)
     out = tf.nn.relu(out)
-    #out = tf.tanh(out)
   
   return out
 
@@ -454,7 +437,6 @@ def joint_inference(x_input, training, slope, dropout):
     with tf.variable_scope('multiplication') as scope:
       output_state_1    = layer_linear(all_inputs_1, (all_inputs_1.get_shape()[1], STATE_NUM), scope='layer_pre_pre')
       output_state_1    = tf.tanh(output_state_1) #elu or relu?
-      #output_state_1    = tf.asinh(output_state_1) #elu or relu?
       
       output_state_1 = tf.nn.dropout(output_state_1, dropout)
       
@@ -500,7 +482,6 @@ def joint_inference(x_input, training, slope, dropout):
       pre_activations_2 = layer_linear(output_state_2, (output_state_2.get_shape()[1], filter_size[1]*filter_size[1]*previous_channels[1]*channels[1]), scope='layer_pre')            
       pre_st_weight_2   = binary_wrapper(pre_activations_2, estimator =  StochasticGradientEstimator.ST, pass_through = True, stochastic_tensor = tf.constant(True), slope_tensor = slope)
       
-      #print(pre_st_weight_2.get_shape())
       pre_st_weight_2   = tf.reshape(pre_st_weight_2, (tf.shape(pre_st_weight_2)[0], filter_size[1], filter_size[1], previous_channels[1], channels[1]))
       inference_fn_w    = lambda input_w: tf.multiply(filter_l2, input_w)
       st_weight_2       = tf.map_fn(inference_fn_w, pre_st_weight_2, dtype=tf.float32, swap_memory=True)
@@ -558,10 +539,6 @@ opt_, acc, w_st, pre_ac,  loss_, inp, conv_1, fil1 = joint_inference(x_input, tr
 sess = tf.Session()
 sess.run(tf.initialize_all_variables())
 
-#run_context = session_run_hook.SessionRunContext(
-      #original_args=session_run_hook.SessionRunArgs(fetches, feed_dict),
-      #session=sess)
-
 # saver for parameters
 saver = tf.train.Saver()
 
@@ -583,12 +560,10 @@ for i in range(iteration):
 
   _, train_loss, train_acc, weight_st, inp_, cnn1, fill = sess.run([opt_, loss_, acc, w_st, inp, conv_1, fil1], feed_dict={x_input: batch[0],  y_target: batch[1], training: True, slope_l:slope, dropout:0.5})
    
-
   train_loss_all.append(train_loss)
   train_acc_all.append(train_acc)
 
  
-  #print(np.shape(activation_pre))
   ##validation checker
   if (i % validation_check) == 0 : 
 
@@ -627,7 +602,6 @@ for i in range(iteration):
         f.write("Sigmoid slope:" + str(slope) + '\n')
     
     if i >= ealystopping_valu :
-      #print('test')
       if (test_loss < hist_loss):
         patience_cnt = 0
         hist_loss = test_loss      
@@ -641,9 +615,3 @@ for i in range(iteration):
     f.close()    
     # initializer of train avg
     train = []
-
-
-
-
-
-
